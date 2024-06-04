@@ -1,0 +1,57 @@
+server:
+  port: 9527
+
+spring:
+  application:
+    name: cloud-gateway #\u4EE5\u5FAE\u670D\u52A1\u6CE8\u518C\u8FDBconsul\u6216nacos\u670D\u52A1\u5217\u8868\u5185
+  cloud:
+    consul: #\u914D\u7F6Econsul\u5730\u5740
+      host: localhost
+      port: 8500
+      discovery:
+        prefer-ip-address: true
+        service-name: ${spring.application.name}
+    gateway:
+      routes:
+        - id: pay_routh1 #pay_routh1                #\u8DEF\u7531\u7684ID(\u7C7B\u4F3Cmysql\u4E3B\u952EID)\uFF0C\u6CA1\u6709\u56FA\u5B9A\u89C4\u5219\u4F46\u8981\u6C42\u552F\u4E00\uFF0C\u5EFA\u8BAE\u914D\u5408\u670D\u52A1\u540D
+          #uri: http://localhost:8001                #\u5339\u914D\u540E\u63D0\u4F9B\u670D\u52A1\u7684\u8DEF\u7531\u5730\u5740
+          uri: lb://cloud-payment-service          #\u5339\u914D\u540E\u63D0\u4F9B\u670D\u52A1\u7684\u8DEF\u7531\u5730\u5740
+          predicates:
+            - Path=/pay/gateway/get/**              # \u65AD\u8A00\uFF0C\u8DEF\u5F84\u76F8\u5339\u914D\u7684\u8FDB\u884C\u8DEF\u7531
+            - After=2024-05-23T21:11:42.105948600+08:00[Asia/Shanghai]
+            # - Cookie=username,zzyy
+            # - Header=X-Request-Id, \d+  # \u8BF7\u6C42\u5934\u8981\u6709X-Request-Id\u5C5E\u6027\u5E76\u4E14\u503C\u4E3A\u6574\u6570\u7684\u6B63\u5219\u8868\u8FBE\u5F0F
+            # - Host=**.atguigu.com
+            # - Query=username, \d+  # \u8981\u6709\u53C2\u6570\u540Dusername\u5E76\u4E14\u503C\u8FD8\u8981\u662F\u6574\u6570\u624D\u80FD\u8DEF\u7531
+            #- RemoteAddr=10.100.208.1/24 # \u5916\u90E8\u8BBF\u95EE\u6211\u7684IP\u9650\u5236\uFF0C\u6700\u5927\u8DE8\u5EA6\u4E0D\u8D85\u8FC732\uFF0C\u76EE\u524D\u662F1~24\u5B83\u4EEC\u662F CIDR \u8868\u793A\u6CD5\u3002
+            - My=diamond
+            #- name: My
+            #args:
+            # userType: diamond
+
+        - id: pay_routh2 #pay_routh2                #\u8DEF\u7531\u7684ID(\u7C7B\u4F3Cmysql\u4E3B\u952EID)\uFF0C\u6CA1\u6709\u56FA\u5B9A\u89C4\u5219\u4F46\u8981\u6C42\u552F\u4E00\uFF0C\u5EFA\u8BAE\u914D\u5408\u670D\u52A1\u540D
+          #uri: http://localhost:8001                #\u5339\u914D\u540E\u63D0\u4F9B\u670D\u52A1\u7684\u8DEF\u7531\u5730\u5740
+          uri: lb://cloud-payment-service          #\u5339\u914D\u540E\u63D0\u4F9B\u670D\u52A1\u7684\u8DEF\u7531\u5730\u5740
+          predicates:
+            - Path=/pay/gateway/info/**              # \u65AD\u8A00\uFF0C\u8DEF\u5F84\u76F8\u5339\u914D\u7684\u8FDB\u884C\u8DEF\u7531
+        - id: pay_routh3 #pay_routh3
+          uri: lb://cloud-payment-service                #匹配后提供服务的路由地址
+          predicates:
+            - Path=/pay/gateway/filter/**              # 断言，路径相匹配的进行路由
+            #- Path=/gateway/filter/**              # 断言，为配合PrefixPath测试过滤，暂时注释掉/pay
+            #- Path=/XYZ/abc/{segment}           # 断言，为配合SetPath测试，{segment}的内容最后被SetPath取代
+          filters:
+            - My=atguigu
+          #- SetPath=/pay/gateway/{segment}  # {segment}表示占位符，你写abc也行但要上下一致
+          #- PrefixPath=/pay # http://localhost:9527/pay/gateway/filter
+            - AddRequestHeader=X-Request-atguigu1,atguiguValue1  # 请求头kv，若一头含有多参则重写一行设置
+          #- AddRequestHeader=X-Request-atguigu2,atguiguValue2
+          #- RemoveRequestHeader=sec-fetch-site      # 删除请求头sec-fetch-site
+          #- SetRequestHeader=sec-fetch-mode, Blue-updatebyzzyy # 将请求头sec-fetch-mode对应的值修改为Blue-updatebyzzyy
+          #- AddRequestParameter=customerId,9527001 # 新增请求参数Parameter：k ，v
+          #- RemoveRequestParameter=customerName   # 删除url请求参数customerName，你传递过来也是null
+          #- AddResponseHeader=X-Response-atguigu, BlueResponse # 新增请求参数X-Response-atguigu并设值为BlueResponse
+          #- SetResponseHeader=Date,2099-11-11 # 设置回应头Date值为2099-11-11
+          #- RemoveResponseHeader=Content-Type # 将默认自带Content-Type回应属性删除
+
+

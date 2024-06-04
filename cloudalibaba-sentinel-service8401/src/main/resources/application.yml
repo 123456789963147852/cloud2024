@@ -1,0 +1,23 @@
+server:
+  port: 8401
+
+spring:
+  application:
+    name: cloudalibaba-sentinel-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848         #Nacos\u670D\u52A1\u6CE8\u518C\u4E2D\u5FC3\u5730\u5740
+    sentinel:
+      transport:
+        dashboard: localhost:8080 #\u914D\u7F6ESentinel dashboard\u63A7\u5236\u53F0\u670D\u52A1\u5730\u5740
+        port: 8719 #\u9ED8\u8BA48719\u7AEF\u53E3\uFF0C\u5047\u5982\u88AB\u5360\u7528\u4F1A\u81EA\u52A8\u4ECE8719\u5F00\u59CB\u4F9D\u6B21+1\u626B\u63CF,\u76F4\u81F3\u627E\u5230\u672A\u88AB\u5360\u7528\u7684\u7AEF\u53E3
+      web-context-unify: false # controller\u5C42\u7684\u65B9\u6CD5\u5BF9service\u5C42\u8C03\u7528\u4E0D\u8BA4\u4E3A\u662F\u540C\u4E00\u4E2A\u6839\u94FE\u8DEF
+      datasource:
+        ds1:
+          nacos:
+            server-addr: localhost:8848
+            dataId: ${spring.application.name}
+            groupId: DEFAULT_GROUP
+            data-type: json
+            rule-type: flow # com.alibaba.cloud.sentinel.datasource.RuleType
